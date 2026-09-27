@@ -1,4 +1,4 @@
-import { ProductsPage } from '@/pages/ProductsPage';
+import { ProductsPage } from '@/views/ProductsPage';
 
 export const metadata = {
   title: 'Products | FS Softwares - 20+ Business Solutions',

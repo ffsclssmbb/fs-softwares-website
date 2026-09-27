@@ -1,4 +1,4 @@
-import { AboutPage } from '@/pages/AboutPage';
+import { AboutPage } from '@/views/AboutPage';
 
 export const metadata = {
   title: 'About | FS Softwares - Born in Mindanao, Built for the Philippines',

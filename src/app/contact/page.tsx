@@ -1,4 +1,4 @@
-import { ContactPage } from '@/pages/ContactPage';
+import { ContactPage } from '@/views/ContactPage';
 
 export const metadata = {
   title: 'Contact | FS Softwares - Get in Touch with Our 3 Hubs',

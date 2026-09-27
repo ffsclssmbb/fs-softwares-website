@@ -8,6 +8,7 @@ interface GlowCardProps extends MotionProps {
   className?: string;
   glowColor?: 'green' | 'silver';
   hover?: boolean;
+  onClick?: React.MouseEventHandler<HTMLDivElement>;
 }
 
 export function GlowCard({

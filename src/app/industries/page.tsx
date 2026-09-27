@@ -1,4 +1,4 @@
-import { IndustriesPage } from '@/pages/IndustriesPage';
+import { IndustriesPage } from '@/views/IndustriesPage';
 
 export const metadata = {
   title: 'Industries | FS Softwares - 12 Industry Verticals',

@@ -1,4 +1,4 @@
-import { PricingPage } from '@/pages/PricingPage';
+import { PricingPage } from '@/views/PricingPage';
 
 export const metadata = {
   title: 'Pricing | FS Softwares - Flexible, Transparent Pricing',

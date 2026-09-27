@@ -34,7 +34,6 @@ const hubMap: Record<string, RegionalHub> = {
   'tarlac': 'ncr',
   'pampanga': 'ncr',
   'zambales': 'ncr',
-  'batangas': 'ncr',
   'mindoro occidental': 'ncr',
   'mindoro oriental': 'ncr',
   'marinduque': 'ncr',

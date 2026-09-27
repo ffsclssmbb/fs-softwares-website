@@ -1,5 +1,3 @@
-'use client';
-
 import type { Metadata } from 'next';
 import { Providers } from '@/app/providers';
 import { Header } from '@/components/layout/Header';

@@ -1,4 +1,4 @@
-import { ProcessPage } from '@/pages/ProcessPage';
+import { ProcessPage } from '@/views/ProcessPage';
 
 export const metadata = {
   title: 'Our Process | FS Softwares - 9-Step Sales-to-Go-Live Journey',
