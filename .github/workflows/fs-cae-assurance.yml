@@ -47,6 +47,16 @@ jobs:
         uses: github/codeql-action/analyze@9418214df1f2c4b8128c770156c409013b07d6b9
         with:
           category: "/language:javascript-typescript"
+          upload: false
+          output: codeql-sarif
+      - name: Preserve CodeQL SARIF as workflow evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: codeql-sarif-${{ github.run_id }}
+          path: codeql-sarif/
+          if-no-files-found: warn
+          retention-days: 90
 
   website-quality:
     name: Install, audit, type-check, lint and build
@@ -55,7 +65,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 20
           cache: npm
@@ -78,7 +88,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 20
           cache: npm
