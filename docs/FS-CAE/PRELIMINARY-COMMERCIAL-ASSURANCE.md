@@ -123,3 +123,41 @@ Workflow run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41
 **Required action:** Triage each advisory and determine affected direct/transitive package, reachable functionality, runtime exposure and vendor-fixed version. Resolve the dependency-tree inconsistency, regenerate the lockfile through a reviewed dependency update, and rerun CI. Do not apply force upgrades without compatibility and regression review.
 
 The workflow run confirms that the source-level release blockers are accompanied by actual dependency and inventory failures. The release disposition remains NOT APPROVED.
+
+
+## 7. Remediation work and verified CI (2026-11-05)
+
+### Contact form correction implemented on assurance branch
+
+The simulated timer-based success handler has been replaced with a real POST to `/api/contact`. The server route now:
+- Enforces same-origin requests.
+- Limits request bodies to 10 KiB while streaming.
+- Validates required fields, email format, selected industry/branch/contact values and selected-system allowlist.
+- Includes a honeypot field for basic bot filtering.
+- Requires the visitor to acknowledge a concise data-use notice.
+- Forwards the enquiry only to an operator-configured HTTPS `CONTACT_WEBHOOK_URL`, with an optional server-only bearer token.
+- Returns a success response only after the configured webhook accepts the submission; missing configuration returns HTTP 503 rather than a false success.
+- Does not log submitted personal data.
+
+**Not yet complete:** No webhook endpoint or token has been configured or tested. Public-edge rate limiting, delivery retry/monitoring, privacy policy, retention/deletion procedure, processor review and live end-to-end delivery test remain required. Until the operator configures and verifies the webhook, the form intentionally reports that contact delivery is unavailable.
+
+### TypeScript project configuration correction
+
+The root `tsconfig.json` referenced `tsconfig.node.json` as a project reference without the required composite project setting. That invalid reference was removed. A subsequent CI run passed the website type-check and lint.
+
+### Safe dependency refresh and build verification
+
+Workflow: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41958532217
+
+- Semver-compatible `npm audit fix` refresh completed without using `--force`.
+- Clean `npm ci`: PASSED.
+- Type-check: PASSED.
+- Lint: PASSED.
+- Production build: PASSED.
+- Refreshed lockfile-only changes committed on the assurance branch: `21505ad2541d5be6135ed84fc33697146cf75b8e`.
+- Full audit report uploaded as workflow artifact: `fs-cae-website-dependency-audit`.
+- Remaining audit gate: FAILED — **11 advisories: 6 moderate, 4 high, 1 critical**.
+
+The compatible refresh reduced the original 14 advisories to 11, but it does not remove the major-version upgrade requirement for the vulnerable Next.js dependency line. The remaining findings require package-level triage and a planned framework migration with regression coverage.
+
+**Updated disposition:** NOT APPROVED FOR COMMERCIAL WEBSITE RELEASE — REMAINING CRITICAL/HIGH DEPENDENCY FINDINGS AND EXTERNAL CONFIGURATION/PRIVACY GATES ARE OPEN.
