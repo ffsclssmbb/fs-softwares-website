@@ -41,6 +41,7 @@ export function ContactPage() {
     message: '',
     preferredContact: 'email' as const,
     website: '',
+    consent: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -49,7 +50,9 @@ export function ContactPage() {
   const handleChange = (e: any) => {
     const { name, value, checked } = e.target;
 
-    if (name === 'currentSystems') {
+    if (name === 'consent') {
+      setFormData(prev => ({ ...prev, consent: checked }));
+    } else if (name === 'currentSystems') {
       setFormData(prev => ({
         ...prev,
         currentSystems: checked
@@ -93,6 +96,7 @@ export function ContactPage() {
         message: '',
         preferredContact: 'email',
         website: '',
+        consent: false,
       });
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
@@ -351,6 +355,24 @@ export function ContactPage() {
                       </label>
                     ))}
                   </div>
+                </div>
+
+                {/* Data-use notice and acknowledgement */}
+                <div className="rounded-lg border border-primary-green/20 bg-primary-green/5 p-4">
+                  <p className="text-sm text-text-secondary mb-3">
+                    Your details will be sent to our configured contact service so the appropriate FS Softwares team can respond to this enquiry. Please do not submit sensitive personal information.
+                  </p>
+                  <label className="flex items-start gap-3 text-sm text-white">
+                    <input
+                      type="checkbox"
+                      name="consent"
+                      checked={formData.consent}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 h-4 w-4 accent-primary-green"
+                    />
+                    <span>I acknowledge this data-use notice and agree to be contacted about this enquiry.</span>
+                  </label>
                 </div>
 
                 {/* Submit Button */}
