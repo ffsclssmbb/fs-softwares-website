@@ -187,3 +187,20 @@ Run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41963092785
 - npm audit: 10 Moderate, 0 High, 0 Critical.
 - The job failed only at pushing the generated package-lock.json because the branch had concurrent commits (non-fast-forward rejection). The workflow now rebases the generated lockfile-only commit before pushing; that correction is awaiting its own run.
 - The successful build and audit were run against the workflow's temporary regenerated lockfile. Until that lockfile is committed and the committed revision independently passes CI, this is a validated migration candidate, not a finalized dependency baseline.
+
+
+## 2026-11-05 full assurance verification — successful
+
+Feature-branch assurance run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41966637923
+
+All four assurance jobs completed successfully on commit b11de21e93f5784f8ca5b52e10ac2ea38c411a77:
+- Secret scanning: PASSED.
+- CodeQL analysis: PASSED; SARIF preserved as a workflow artifact because hosted code scanning is not enabled.
+- Dependency install, npm audit, type-check, lint and production build: PASSED.
+- CycloneDX SBOM and third-party license inventory: PASSED after switching SBOM generation to the package-lock input and tolerating npm's non-fatal peer/metadata warnings.
+- CodeQL artifact: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41966637923/artifacts/13387344395
+- Inventory artifact: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41966637923/artifacts/13386989592
+
+npm audit reports 10 Moderate, 0 High and 0 Critical. The install/build job reports peer-dependency warnings involving ESLint 10 and eslint-plugin-react's supported peer range; do not treat a successful build as resolution of those Moderate advisories.
+
+**Updated CI disposition:** full assurance workflow passed on this feature-branch commit. **Overall commercial release disposition remains NOT APPROVED** because live contact delivery, privacy/retention/processor review, legal routes, CSP/HSTS and edge configuration, pricing/support approvals, accessibility/performance, analytics consent and IP provenance remain unverified or incomplete.
