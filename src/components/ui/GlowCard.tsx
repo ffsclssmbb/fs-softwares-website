@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, MotionProps } from 'framer-motion';
+import { motion, MotionProps } from 'motion/react';
 import { cn } from '@/utils/cn';
 
 interface GlowCardProps extends MotionProps {
