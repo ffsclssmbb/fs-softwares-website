@@ -40,6 +40,7 @@ export function ContactPage() {
     currentSystems: [] as string[],
     message: '',
     preferredContact: 'email' as const,
+    website: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -68,9 +69,18 @@ export function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success('Thank you! We\'ll be in touch soon.');
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error || 'We could not submit your enquiry. Please try again or contact a regional hub directly.');
+      }
+
+      toast.success('Thank you! Your enquiry has been received.');
       setFormData({
         name: '',
         company: '',
@@ -82,6 +92,7 @@ export function ContactPage() {
         currentSystems: [],
         message: '',
         preferredContact: 'email',
+        website: '',
       });
     } catch (error) {
       toast.error('Something went wrong. Please try again.');
@@ -144,6 +155,20 @@ export function ContactPage() {
               <h2 className="text-2xl font-bold text-white mb-6">Get in Touch</h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Honeypot field for basic automated-spam filtering */}
+                <div aria-hidden="true" className="absolute -left-[10000px] h-px w-px overflow-hidden">
+                  <label htmlFor="contact-website">Leave this field empty</label>
+                  <input
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={formData.website}
+                    onChange={handleChange}
+                  />
+                </div>
+
                 {/* Name & Company */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
