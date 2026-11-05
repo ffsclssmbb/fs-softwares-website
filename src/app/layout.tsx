@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Providers } from '@/app/providers';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -8,7 +8,6 @@ export const metadata: Metadata = {
   title: 'FS Softwares - Business Management Systems | Philippines',
   description: 'Stop running your business from spreadsheets. FS Softwares builds business management systems for Philippine companies across NCR, Cebu, and Davao.',
   keywords: ['business software', 'Philippines', 'POS system', 'property management', 'healthcare management', 'fleet management'],
-  viewport: 'width=device-width, initial-scale=1',
   icons: {
     icon: '/logos/fs-icon.png',
   },
@@ -23,6 +22,11 @@ export const metadata: Metadata = {
       height: 630,
     }],
   },
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
