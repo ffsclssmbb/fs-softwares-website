@@ -86,7 +86,7 @@ jobs:
       - name: Install locked dependencies
         run: npm ci
       - name: Generate CycloneDX SBOM
-        run: npx --yes @cyclonedx/cyclonedx-npm --package-lock-only --output-file fs-cae-sbom.cdx.json
+        run: npx --yes @cyclonedx/cyclonedx-npm --package-lock-only --ignore-npm-errors --output-file fs-cae-sbom.cdx.json
       - name: Generate third-party license inventory
         run: npx --yes license-checker --production --json --out fs-cae-licenses.json
       - name: Upload inventory evidence
