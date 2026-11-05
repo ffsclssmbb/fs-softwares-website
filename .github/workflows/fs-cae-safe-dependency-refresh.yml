@@ -28,8 +28,11 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Resolve declared dependency migration without force
+      - name: Regenerate lockfile for declared framework migration
         run: |
+          # The committed lockfile still described the old Next 14 / React 18
+          # tree. Do not let npm reconcile incompatible old peer metadata.
+          rm -f package-lock.json
           npm install --no-fund --no-audit
           npm audit fix --no-fund --no-audit || true
 
