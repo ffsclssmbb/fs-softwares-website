@@ -99,7 +99,7 @@ export function ContactPage() {
         consent: false,
       });
     } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
