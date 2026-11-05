@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SectionContainer, CTAButton, GlowCard, Badge } from '@/components/ui';
 import { HUBS } from '@/utils/constants';
 import { Users, Zap, Globe, Award } from 'lucide-react';
