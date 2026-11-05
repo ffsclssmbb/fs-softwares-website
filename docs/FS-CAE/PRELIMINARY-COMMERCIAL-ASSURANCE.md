@@ -108,3 +108,18 @@ The simulated contact form is a confirmed critical commercial-functionality defe
 8. Complete IP/license, privacy and commercial/legal review.
 9. Produce exact release artifact, hash, provenance and signed release decision.
 
+
+
+## 6. Actual CI results (2026-11-05)
+
+Workflow run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41954243882
+
+- **Secret scanning:** PASSED.
+- **CodeQL:** PASSED.
+- **Dependency audit:** FAILED — npm reported 14 vulnerabilities (7 moderate, 6 high, 1 critical). The audit output includes advisories affecting the Next.js dependency tree and PostCSS-related packages. This is an advisory count, not a determination that every issue is exploitable in the deployed website.
+- **SBOM generation:** FAILED — CycloneDX invoked npm dependency-tree inspection and received ELSPROBLEMS because npm reported `three@0.157.0` as invalid in the installed dependency tree. The third-party license inventory and artifact upload steps were skipped.
+- **Type-check, lint and production build:** SKIPPED because the workflow stops after the failed high-severity dependency audit. No build result has been established.
+
+**Required action:** Triage each advisory and determine affected direct/transitive package, reachable functionality, runtime exposure and vendor-fixed version. Resolve the dependency-tree inconsistency, regenerate the lockfile through a reviewed dependency update, and rerun CI. Do not apply force upgrades without compatibility and regression review.
+
+The workflow run confirms that the source-level release blockers are accompanied by actual dependency and inventory failures. The release disposition remains NOT APPROVED.
