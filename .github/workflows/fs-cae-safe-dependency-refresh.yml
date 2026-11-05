@@ -1,4 +1,4 @@
-name: FS-CAE Safe Dependency Refresh
+name: FS-CAE Dependency Migration Validation
 
 on:
   push:
@@ -28,8 +28,10 @@ jobs:
           node-version: 20
           cache: npm
 
-      - name: Apply non-breaking dependency fixes only
-        run: npm audit fix --no-fund --no-audit || true
+      - name: Resolve declared dependency migration without force
+        run: |
+          npm install --no-fund --no-audit
+          npm audit fix --no-fund --no-audit || true
 
       - name: Verify clean lockfile installation
         run: npm ci
