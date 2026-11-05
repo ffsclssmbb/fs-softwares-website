@@ -13,6 +13,7 @@ const ALLOWED_SYSTEMS = new Set([
 ]);
 const ALLOWED_BRANCH_COUNTS = new Set(['1', '2-5', '6-10', '10+']);
 const ALLOWED_CONTACT_METHODS = new Set(['email', 'phone', 'both']);
+const ALLOWED_INDUSTRIES = new Set(['telecommunications', 'construction', 'healthcare', 'hospitality', 'retail', 'logistics', 'other']);
 
 function cleanString(value: unknown, maxLength: number): string | null {
   if (typeof value !== 'string') return null;
@@ -84,6 +85,12 @@ export async function POST(request: NextRequest) {
   if (!name || !company || !email || !phone || !location || !industry || !numberOfBranches || !preferredContact) {
     return invalid('Please complete all required fields.');
   }
+  if (body.consent !== true) {
+    return invalid('Please acknowledge the data-use notice before submitting.');
+  }
+  if (!ALLOWED_INDUSTRIES.has(industry)) {
+    return invalid('Please select a valid industry.');
+  }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return invalid('Please provide a valid email address.');
   }
@@ -126,6 +133,7 @@ export async function POST(request: NextRequest) {
       currentSystems,
       message,
       preferredContact,
+      consentAcknowledged: true,
     },
   };
 
