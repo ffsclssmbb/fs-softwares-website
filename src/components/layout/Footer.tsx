@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Facebook, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
 import { HUBS } from '@/utils/constants';
 
