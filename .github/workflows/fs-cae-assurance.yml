@@ -2,9 +2,9 @@ name: FS-CAE Website Assurance
 
 on:
   pull_request:
-    branches: [main, feat/fs-cae-commercial-assurance]
-  push:
     branches: [main]
+  push:
+    branches: [main, feat/fs-cae-commercial-assurance]
   workflow_dispatch:
 
 permissions:
