@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import { RegionalHub } from '@/types';
 
 const hubMap: Record<string, RegionalHub> = {
@@ -102,19 +101,7 @@ const hubMap: Record<string, RegionalHub> = {
 };
 
 export function useRegionalHub(location?: string): RegionalHub | null {
-  const [hub, setHub] = useState<RegionalHub | null>(null);
-
-  useEffect(() => {
-    if (location) {
-      const normalized = location.toLowerCase().trim();
-      const foundHub = Object.entries(hubMap).find(([key]) => 
-        normalized.includes(key) || key.includes(normalized)
-      )?.[1];
-      setHub(foundHub || null);
-    }
-  }, [location]);
-
-  return hub;
+  return location ? getHubFromLocation(location) : null;
 }
 
 export function getHubFromLocation(location: string): RegionalHub | null {
