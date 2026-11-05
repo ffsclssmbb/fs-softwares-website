@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
-import { Facebook, Linkedin, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { motion } from 'motion/react';
+import { Mail, Phone, MapPin } from 'lucide-react';
+import { FaFacebookF, FaLinkedinIn, FaTwitter } from 'react-icons/fa';
 import { HUBS } from '@/utils/constants';
 
 const footerLinks = {
@@ -33,9 +34,9 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { icon: Facebook, href: 'https://facebook.com/fssoftwares', label: 'Facebook' },
-  { icon: Linkedin, href: 'https://linkedin.com/company/fssoftwares', label: 'LinkedIn' },
-  { icon: Twitter, href: 'https://twitter.com/fssoftwares', label: 'Twitter' },
+  { icon: FaFacebookF, href: 'https://facebook.com/fssoftwares', label: 'Facebook' },
+  { icon: FaLinkedinIn, href: 'https://linkedin.com/company/fssoftwares', label: 'LinkedIn' },
+  { icon: FaTwitter, href: 'https://twitter.com/fssoftwares', label: 'Twitter' },
 ];
 
 export function Footer() {

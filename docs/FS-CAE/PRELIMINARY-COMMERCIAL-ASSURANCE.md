@@ -1,0 +1,206 @@
+# FS Softwares Website — Preliminary FS-CAE Assessment
+
+**Assessment date:** 2026-11-05  
+**Repository:** https://github.com/ffsclssmbb/fs-softwares-website  
+**Assessed branch/commit:** main (source reviewed through GitHub repository files; commit baseline to be captured in final CI run)  
+**Assessment scope:** README, package manifest and lockfile, Next.js configuration, TypeScript config, app routes, contact form, pricing page, deployment guide, launch checklist, changelog and public SEO files  
+**Assessment status:** PARTIAL — no local execution, live deployment inspection, authenticated hosting access, or dynamic testing performed
+
+## 1. Product profile
+
+The repository describes FS Softwares as a nationwide business-management software provider for Philippine enterprises, with NCR, Cebu and Davao hubs. It documents a Next.js 14 / React 18 / TypeScript / Tailwind application and product, pricing, process, about, industries and contact pages.
+
+The repository is public. A package lockfile is present. TypeScript strict mode is enabled. The current package manifest includes scripts for development, production build, lint and type-check, but no test script.
+
+## 2. Confirmed source-level findings
+
+### FSW-01 — Contact form simulates successful submission and discards lead data
+**Severity: CRITICAL for business function / HIGH for customer trust**
+
+In `src/views/ContactPage.tsx`, `handleSubmit` waits for a timer, displays a success toast, and resets the form. The source comment explicitly identifies this as a simulated API call. No actual request or durable submission path is present in the inspected handler.
+
+**Impact:** Prospects can be told their enquiry was received when no lead is actually transmitted or stored. This is a material commercial-functionality and trust failure.
+
+**Required remediation:** Implement a real server-side contact endpoint or trusted CRM/form provider; validate all fields server-side; apply rate limiting, spam controls and CSRF/origin protections; provide privacy notice and consent where appropriate; store/transmit only necessary data; log delivery status without exposing personal data; send a genuine success message only after confirmed acceptance; test delivery, failure, retry and duplicate submission behavior.
+
+### FSW-02 — CSP claim does not match inspected Next.js configuration
+**Severity: HIGH**
+
+The README says CSP headers are configured. The inspected `next.config.js` sets X-DNS-Prefetch-Control, X-Frame-Options, X-Content-Type-Options and Referrer-Policy, but does not set Content-Security-Policy or Strict-Transport-Security.
+
+**Impact:** Documentation overstates the inspected security-header posture. CSP and HSTS behavior may be supplied by the hosting edge, but that has not been verified.
+
+**Required remediation:** Verify production response headers at the actual domain and hosting edge. Define a nonce/hash-aware CSP compatible with required scripts, analytics and 3D assets; avoid broad unsafe directives. Configure HSTS at the HTTPS edge after confirming all relevant subdomains are HTTPS-ready. Add Permissions-Policy and other headers based on actual app needs. Test CSP in report-only mode before enforcement.
+
+### FSW-03 — Missing routes referenced by footer and documentation
+**Severity: HIGH for commercial/customer readiness**
+
+The inspected App Router tree includes routes for home, about, contact, industries, pricing, process and products. The footer references additional routes including resources/blog, privacy, terms, security, SLA, documentation and support. The inspected route tree does not show matching local pages for several of these references. The README also describes a Resources page that was not found in the inspected route listing.
+
+**Impact:** Users may reach dead links or lack access to essential privacy, terms, support and service information. The route inventory should be fully checked before launch.
+
+**Required remediation:** Enumerate every internal link and compare it to actual routes; implement required legal/support pages or remove links until available; add automated broken-link/route checks.
+
+### FSW-04 — Pricing and support commitments are hardcoded marketing content
+**Severity: HIGH pending business approval**
+
+`src/views/PricingPage.tsx` contains hardcoded implementation fees, monthly fees, bundle discounts, response times and support coverage (including 24/7 access and on-call language). The README and launch checklist do not provide evidence that these amounts and service commitments have current authorized approval or operational capacity.
+
+**Impact:** Customers may rely on prices, discounts, response times or service coverage that are not contractually approved or operationally deliverable.
+
+**Required remediation:** Obtain commercial owner approval for each figure and SLA; align website copy with signed offer, EULA/terms, service scope, exclusions, taxes, renewal and support policies; timestamp/review pricing; ensure 24/7 and immediate/on-call statements match actual staffing and contractual response definitions.
+
+### FSW-05 — Analytics and marketing integrations are described but not evidenced as operational
+**Severity: MEDIUM**
+
+The README lists GA4, Hotjar, CRM event tracking and regional lead tracking. `.env.example` contains public analytics IDs and API URL placeholders, but the inspected package manifest and root layout do not establish that those integrations are implemented, consent-managed, or operational. The changelog describes analytics integration as pending.
+
+**Impact:** Potential mismatch between documented capabilities and implementation; tracking could be absent or could collect personal data without appropriate transparency/consent if later enabled.
+
+**Required remediation:** Verify actual script loading and events; implement privacy-aware consent and opt-out controls where required; document processors, data destinations and retention; remove unused feature flags and placeholder configuration; do not claim integrations until verified.
+
+### FSW-06 — Accessibility and performance claims are unverified
+**Severity: MEDIUM**
+
+README, deployment guide and changelog claim WCAG 2.1 AA and sub-three-second performance, while the launch checklist still lists accessibility and performance tests as unchecked. No independent audit or Lighthouse/browser test evidence was retrieved.
+
+**Required remediation:** Perform keyboard and screen-reader testing, automated accessibility checks plus manual review, contrast testing, responsive testing, and real-user/lab performance checks across representative mobile networks and devices. Publish only verified claims.
+
+### FSW-07 — No CI/test evidence or reproducible release result retrieved
+**Severity: HIGH / evidence gap**
+
+A package-lock file exists and package scripts include build, lint and type-check. No test script is declared in the inspected package manifest. No CI workflow, successful build, npm audit report, SBOM, license inventory, secret scan, deployment artifact or artifact hash was retrieved in this pass.
+
+**Required remediation:** Run clean `npm ci`, `npm audit`, `npm run type-check`, `npm run lint`, and `npm run build`; add meaningful tests; collect scan and inventory outputs; tie artifacts to a reviewed commit.
+
+### FSW-08 — MIT license and ownership scope need legal verification
+**Severity: MEDIUM**
+
+The repository contains an MIT license naming FS Softwares by TophComm Systems. This is a repository-level license declaration, not proof that the legal entity owns all code, contributions, dependencies, images, fonts, logos or other assets.
+
+**Required remediation:** Verify IP assignment and contributor rights, dependency/asset licenses, trademark permissions, and whether MIT is intended for the entire public repository or only its source code. Obtain qualified legal review before distribution claims.
+
+## 3. Additional scope checks
+
+- `.env.example` contains public-prefixed analytics IDs, API URL and feature flags. Confirm no secrets are ever placed in NEXT_PUBLIC variables; values compiled into browser bundles are public.
+- Next.js configuration does not show remote image allowlist beyond two domains; verify all production images use optimized and approved sources.
+- Metadata references `https://fssoftwares.ph` and an OG image; verify domain ownership, DNS, TLS, canonical URL, and image availability.
+- Sitemap last-modified dates are 2026-08-30; verify current route coverage and regenerate at release.
+- Robots file excludes paths such as /admin and /api, but robots directives are not access controls. Verify sensitive routes are protected server-side if present.
+- `npm run lint` uses `next lint`; confirm it remains supported by the installed Next.js 14 version and passes in CI.
+- Validate all regional hub locations, emails, phone numbers, legal entity name, product names and sales claims with the business owner.
+
+## 4. Preliminary release disposition
+
+**NOT APPROVED FOR COMMERCIAL WEBSITE RELEASE — REMEDIATION REQUIRED.**
+
+The simulated contact form is a confirmed critical commercial-functionality defect. The mismatch between CSP documentation and inspected configuration, missing legal/support routes, and unverified pricing/SLA commitments are additional blockers. This assessment does not include live response-header verification, full source-tree audit, dependency scan execution, accessibility testing, legal review or production deployment inspection.
+
+## 5. Immediate remediation order
+
+1. Replace simulated contact form submission with a real, secured and tested delivery path.
+2. Reconcile footer links and implement verified Privacy, Terms, Security, SLA, Support and Documentation routes.
+3. Verify and correct all published pricing, discounts and service-level commitments.
+4. Verify live edge security headers and implement a tested CSP/HSTS policy.
+5. Add CI with secret scanning, CodeQL, dependency audit, type-check, lint, production build, SBOM and license inventory.
+6. Add automated tests for contact submission, form validation, routing, navigation and critical user journeys.
+7. Complete accessibility, responsive, SEO and performance testing.
+8. Complete IP/license, privacy and commercial/legal review.
+9. Produce exact release artifact, hash, provenance and signed release decision.
+
+
+
+## 6. Actual CI results (2026-11-05)
+
+Workflow run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41954243882
+
+- **Secret scanning:** PASSED.
+- **CodeQL:** PASSED.
+- **Dependency audit:** FAILED — npm reported 14 vulnerabilities (7 moderate, 6 high, 1 critical). The audit output includes advisories affecting the Next.js dependency tree and PostCSS-related packages. This is an advisory count, not a determination that every issue is exploitable in the deployed website.
+- **SBOM generation:** FAILED — CycloneDX invoked npm dependency-tree inspection and received ELSPROBLEMS because npm reported `three@0.157.0` as invalid in the installed dependency tree. The third-party license inventory and artifact upload steps were skipped.
+- **Type-check, lint and production build:** SKIPPED because the workflow stops after the failed high-severity dependency audit. No build result has been established.
+
+**Required action:** Triage each advisory and determine affected direct/transitive package, reachable functionality, runtime exposure and vendor-fixed version. Resolve the dependency-tree inconsistency, regenerate the lockfile through a reviewed dependency update, and rerun CI. Do not apply force upgrades without compatibility and regression review.
+
+The workflow run confirms that the source-level release blockers are accompanied by actual dependency and inventory failures. The release disposition remains NOT APPROVED.
+
+
+## 7. Remediation work and verified CI (2026-11-05)
+
+### Contact form correction implemented on assurance branch
+
+The simulated timer-based success handler has been replaced with a real POST to `/api/contact`. The server route now:
+- Enforces same-origin requests.
+- Limits request bodies to 10 KiB while streaming.
+- Validates required fields, email format, selected industry/branch/contact values and selected-system allowlist.
+- Includes a honeypot field for basic bot filtering.
+- Requires the visitor to acknowledge a concise data-use notice.
+- Forwards the enquiry only to an operator-configured HTTPS `CONTACT_WEBHOOK_URL`, with an optional server-only bearer token.
+- Returns a success response only after the configured webhook accepts the submission; missing configuration returns HTTP 503 rather than a false success.
+- Does not log submitted personal data.
+
+**Not yet complete:** No webhook endpoint or token has been configured or tested. Public-edge rate limiting, delivery retry/monitoring, privacy policy, retention/deletion procedure, processor review and live end-to-end delivery test remain required. Until the operator configures and verifies the webhook, the form intentionally reports that contact delivery is unavailable.
+
+### TypeScript project configuration correction
+
+The root `tsconfig.json` referenced `tsconfig.node.json` as a project reference without the required composite project setting. That invalid reference was removed. A subsequent CI run passed the website type-check and lint.
+
+### Safe dependency refresh and build verification
+
+Workflow: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41958532217
+
+- Semver-compatible `npm audit fix` refresh completed without using `--force`.
+- Clean `npm ci`: PASSED.
+- Type-check: PASSED.
+- Lint: PASSED.
+- Production build: PASSED.
+- Refreshed lockfile-only changes committed on the assurance branch: `21505ad2541d5be6135ed84fc33697146cf75b8e`.
+- Full audit report uploaded as workflow artifact: `fs-cae-website-dependency-audit`.
+- Remaining audit gate: FAILED — **11 advisories: 6 moderate, 4 high, 1 critical**.
+
+The compatible refresh reduced the original 14 advisories to 11, but it does not remove the major-version upgrade requirement for the vulnerable Next.js dependency line. The remaining findings require package-level triage and a planned framework migration with regression coverage.
+
+**Updated disposition:** NOT APPROVED FOR COMMERCIAL WEBSITE RELEASE — REMAINING CRITICAL/HIGH DEPENDENCY FINDINGS AND EXTERNAL CONFIGURATION/PRIVACY GATES ARE OPEN.
+
+
+## 2026-11-05 Next.js 16 / React 19 migration validation
+
+- A Next.js 15.5.29 compatibility candidate previously passed clean install, type-check, lint and production build; its audit report was 8 Moderate / 1 High (Critical cleared).
+- Next.js 16.4.5 and React 19 migration is being validated separately.
+- Initial dependency resolution exposed the old Framer Motion 10 React 18 peer constraint. Source imports were migrated to the current motion/react package.
+- The first Next.js 16 type-check then identified Motion easing literal typing and social brand icon export incompatibilities. Easing values in the affected view variants were made literal types; footer brand icons use react-icons rather than removed Lucide brand exports.
+- Current dependency migration run 41963092785 is still in progress; the full clean-install, type-check, lint and production build result is not yet verified.
+- Do not mark the framework migration complete until the current lockfile is committed, clean installation passes, all checks pass, and audit evidence is reviewed.
+
+No release approval is implied. The contact webhook still has no configured production destination, and legal routes, hosting security headers, privacy/consent, accessibility, performance, commercial pricing/support claims, and IP provenance remain open.
+
+
+## Latest Next.js 16 migration run evidence — 2026-11-05
+
+Run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41963092785
+
+- Lockfile regeneration: passed.
+- Clean lockfile install: passed.
+- TypeScript type-check: passed.
+- ESLint: passed.
+- Next.js 16.4.5 production build: passed.
+- npm audit: 10 Moderate, 0 High, 0 Critical.
+- The job failed only at pushing the generated package-lock.json because the branch had concurrent commits (non-fast-forward rejection). The workflow now rebases the generated lockfile-only commit before pushing; that correction is awaiting its own run.
+- The successful build and audit were run against the workflow's temporary regenerated lockfile. Until that lockfile is committed and the committed revision independently passes CI, this is a validated migration candidate, not a finalized dependency baseline.
+
+
+## 2026-11-05 full assurance verification — successful
+
+Feature-branch assurance run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41966637923
+
+All four assurance jobs completed successfully on commit b11de21e93f5784f8ca5b52e10ac2ea38c411a77:
+- Secret scanning: PASSED.
+- CodeQL analysis: PASSED; SARIF preserved as a workflow artifact because hosted code scanning is not enabled.
+- Dependency install, npm audit, type-check, lint and production build: PASSED.
+- CycloneDX SBOM and third-party license inventory: PASSED after switching SBOM generation to the package-lock input and tolerating npm's non-fatal peer/metadata warnings.
+- CodeQL artifact: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41966637923/artifacts/13387344395
+- Inventory artifact: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41966637923/artifacts/13386989592
+
+npm audit reports 10 Moderate, 0 High and 0 Critical. The install/build job reports peer-dependency warnings involving ESLint 10 and eslint-plugin-react's supported peer range; do not treat a successful build as resolution of those Moderate advisories.
+
+**Updated CI disposition:** full assurance workflow passed on this feature-branch commit. **Overall commercial release disposition remains NOT APPROVED** because live contact delivery, privacy/retention/processor review, legal routes, CSP/HSTS and edge configuration, pricing/support approvals, accessibility/performance, analytics consent and IP provenance remain unverified or incomplete.

@@ -1,0 +1,94 @@
+name: FS-CAE Dependency Migration Validation
+
+on:
+  push:
+    branches: [feat/fs-cae-commercial-assurance]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fs-cae-safe-refresh-website
+  cancel-in-progress: false
+
+jobs:
+  refresh-and-verify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout assurance branch
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: feat/fs-cae-commercial-assurance
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 22.12
+          cache: npm
+
+      - name: Regenerate lockfile for declared framework migration
+        run: |
+          # The committed lockfile still described the old Next 14 / React 18
+          # tree. Do not let npm reconcile incompatible old peer metadata.
+          rm -f package-lock.json
+          npm install --no-fund --no-audit
+          npm audit fix --no-fund --no-audit || true
+
+      - name: Verify clean lockfile installation
+        run: npm ci
+
+      - name: Capture full dependency audit report
+        shell: bash
+        run: |
+          npm audit --json > fs-cae-website-npm-audit.json || true
+          node -e "const a=require('./fs-cae-website-npm-audit.json'); console.log(JSON.stringify({metadata:a.metadata?.vulnerabilities, advisories:Object.keys(a.vulnerabilities||{})},null,2))"
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Production build
+        run: npm run build
+
+      - name: Commit verified lockfile-only updates
+        shell: bash
+        run: |
+          if git diff --quiet -- package-lock.json; then
+            echo "No lockfile changes were produced."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add package-lock.json
+          git commit -m "fix(deps): apply semver-safe website dependency updates"
+          # Do not rebase a generated lockfile commit over a dirty npm
+          # working tree. If a concurrent push wins, this push fails safely;
+          # the next workflow run regenerates the lockfile from the new head.
+          git push origin HEAD:feat/fs-cae-commercial-assurance
+
+      - name: Upload dependency audit evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: fs-cae-website-dependency-audit
+          path: fs-cae-website-npm-audit.json
+          if-no-files-found: warn
+          retention-days: 90
+
+      - name: Enforce remaining critical/high vulnerability gate
+        if: success()
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const report = JSON.parse(fs.readFileSync('fs-cae-website-npm-audit.json', 'utf8'));
+          const v = report.metadata?.vulnerabilities || {};
+          const critical = v.critical || 0;
+          const high = v.high || 0;
+          console.log(`Remaining critical: ${critical}; high: ${high}`);
+          if (critical > 0 || high > 0) process.exit(1);
+          NODE

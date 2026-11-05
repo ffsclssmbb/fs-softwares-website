@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { INDUSTRIES } from '@/utils/constants';
 import { SectionContainer, CTAButton, GlowCard, Badge } from '@/components/ui';
 import { MapPin, TrendingUp } from 'lucide-react';
@@ -21,7 +21,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: 'easeOut' as const },
   },
 };
 

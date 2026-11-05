@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { SectionContainer, CTAButton, GlowCard, Badge } from '@/components/ui';
 import { HUBS } from '@/utils/constants';
 import { useRegionalHub } from '@/hooks';
@@ -24,7 +24,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
@@ -40,6 +40,8 @@ export function ContactPage() {
     currentSystems: [] as string[],
     message: '',
     preferredContact: 'email' as const,
+    website: '',
+    consent: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,7 +50,9 @@ export function ContactPage() {
   const handleChange = (e: any) => {
     const { name, value, checked } = e.target;
 
-    if (name === 'currentSystems') {
+    if (name === 'consent') {
+      setFormData(prev => ({ ...prev, consent: checked }));
+    } else if (name === 'currentSystems') {
       setFormData(prev => ({
         ...prev,
         currentSystems: checked
@@ -68,9 +72,18 @@ export function ContactPage() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success('Thank you! We\'ll be in touch soon.');
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.error || 'We could not submit your enquiry. Please try again or contact a regional hub directly.');
+      }
+
+      toast.success('Thank you! Your enquiry has been received.');
       setFormData({
         name: '',
         company: '',
@@ -82,9 +95,11 @@ export function ContactPage() {
         currentSystems: [],
         message: '',
         preferredContact: 'email',
+        website: '',
+        consent: false,
       });
     } catch (error) {
-      toast.error('Something went wrong. Please try again.');
+      toast.error(error instanceof Error ? error.message : 'Something went wrong. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -144,6 +159,20 @@ export function ContactPage() {
               <h2 className="text-2xl font-bold text-white mb-6">Get in Touch</h2>
 
               <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Honeypot field for basic automated-spam filtering */}
+                <div aria-hidden="true" className="absolute -left-[10000px] h-px w-px overflow-hidden">
+                  <label htmlFor="contact-website">Leave this field empty</label>
+                  <input
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={formData.website}
+                    onChange={handleChange}
+                  />
+                </div>
+
                 {/* Name & Company */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
@@ -326,6 +355,24 @@ export function ContactPage() {
                       </label>
                     ))}
                   </div>
+                </div>
+
+                {/* Data-use notice and acknowledgement */}
+                <div className="rounded-lg border border-primary-green/20 bg-primary-green/5 p-4">
+                  <p className="text-sm text-text-secondary mb-3">
+                    Your details will be sent to our configured contact service so the appropriate FS Softwares team can respond to this enquiry. Please do not submit sensitive personal information.
+                  </p>
+                  <label className="flex items-start gap-3 text-sm text-white">
+                    <input
+                      type="checkbox"
+                      name="consent"
+                      checked={formData.consent}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 h-4 w-4 accent-primary-green"
+                    />
+                    <span>I acknowledge this data-use notice and agree to be contacted about this enquiry.</span>
+                  </label>
                 </div>
 
                 {/* Submit Button */}

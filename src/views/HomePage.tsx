@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowRight, CheckCircle, Zap, Map } from 'lucide-react';
 import { CTAButton, Badge, SectionContainer } from '@/components/ui';
 import { GlowCard } from '@/components/ui/GlowCard';
@@ -22,7 +22,7 @@ const itemVariants = {
   visible: {
     opacity: 1,
     y: 0,
-    transition: { duration: 0.6, ease: 'easeOut' },
+    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] as const },
   },
 };
 
