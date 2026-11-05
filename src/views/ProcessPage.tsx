@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { PROCESS_STEPS, HUBS } from '@/utils/constants';
 import { SectionContainer, CTAButton, GlowCard, Badge } from '@/components/ui';
 
