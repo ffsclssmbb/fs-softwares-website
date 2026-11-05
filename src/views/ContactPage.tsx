@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { SectionContainer, CTAButton, GlowCard, Badge } from '@/components/ui';
 import { HUBS } from '@/utils/constants';
 import { useRegionalHub } from '@/hooks';
