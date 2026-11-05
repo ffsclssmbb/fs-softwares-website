@@ -173,3 +173,17 @@ The compatible refresh reduced the original 14 advisories to 11, but it does not
 - Do not mark the framework migration complete until the current lockfile is committed, clean installation passes, all checks pass, and audit evidence is reviewed.
 
 No release approval is implied. The contact webhook still has no configured production destination, and legal routes, hosting security headers, privacy/consent, accessibility, performance, commercial pricing/support claims, and IP provenance remain open.
+
+
+## Latest Next.js 16 migration run evidence — 2026-11-05
+
+Run: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/41963092785
+
+- Lockfile regeneration: passed.
+- Clean lockfile install: passed.
+- TypeScript type-check: passed.
+- ESLint: passed.
+- Next.js 16.4.5 production build: passed.
+- npm audit: 10 Moderate, 0 High, 0 Critical.
+- The job failed only at pushing the generated package-lock.json because the branch had concurrent commits (non-fast-forward rejection). The workflow now rebases the generated lockfile-only commit before pushing; that correction is awaiting its own run.
+- The successful build and audit were run against the workflow's temporary regenerated lockfile. Until that lockfile is committed and the committed revision independently passes CI, this is a validated migration candidate, not a finalized dependency baseline.
