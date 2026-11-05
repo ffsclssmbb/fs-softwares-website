@@ -161,3 +161,15 @@ Workflow: https://github.com/ffsclssmbb/fs-softwares-website/actions/runs/419585
 The compatible refresh reduced the original 14 advisories to 11, but it does not remove the major-version upgrade requirement for the vulnerable Next.js dependency line. The remaining findings require package-level triage and a planned framework migration with regression coverage.
 
 **Updated disposition:** NOT APPROVED FOR COMMERCIAL WEBSITE RELEASE — REMAINING CRITICAL/HIGH DEPENDENCY FINDINGS AND EXTERNAL CONFIGURATION/PRIVACY GATES ARE OPEN.
+
+
+## 2026-11-05 Next.js 16 / React 19 migration validation
+
+- A Next.js 15.5.29 compatibility candidate previously passed clean install, type-check, lint and production build; its audit report was 8 Moderate / 1 High (Critical cleared).
+- Next.js 16.4.5 and React 19 migration is being validated separately.
+- Initial dependency resolution exposed the old Framer Motion 10 React 18 peer constraint. Source imports were migrated to the current motion/react package.
+- The first Next.js 16 type-check then identified Motion easing literal typing and social brand icon export incompatibilities. Easing values in the affected view variants were made literal types; footer brand icons use react-icons rather than removed Lucide brand exports.
+- Current dependency migration run 41963092785 is still in progress; the full clean-install, type-check, lint and production build result is not yet verified.
+- Do not mark the framework migration complete until the current lockfile is committed, clean installation passes, all checks pass, and audit evidence is reviewed.
+
+No release approval is implied. The contact webhook still has no configured production destination, and legal routes, hosting security headers, privacy/consent, accessibility, performance, commercial pricing/support claims, and IP provenance remain open.
